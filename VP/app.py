@@ -22,6 +22,7 @@ Features:
 from __future__ import annotations
 
 import hashlib
+import textwrap
 import io
 
 import cv2
@@ -53,6 +54,24 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# ================================================================
+# TOP VISIONPLOT BRAND BAR
+# ================================================================
+
+st.html(
+    """
+    <div class="top-brand">
+        <div class="brand-left">
+            <span class="brand-icon">📈</span>
+            <span class="brand-name">VISION<span>PLOT</span></span>
+        </div>
+        <div class="brand-right">
+            COMPUTER VISION&nbsp;&nbsp;•&nbsp;&nbsp;OCR&nbsp;&nbsp;•&nbsp;&nbsp;DATA EXTRACTION
+        </div>
+    </div>
+    """
+)
+
 
 # ================================================================
 # CSS
@@ -61,44 +80,485 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .main-title {
-        font-size: 42px;
-        font-weight: 800;
-        margin-bottom: 0px;
+
+    /* ============================================================
+       GLOBAL APP
+       ============================================================ */
+
+    .stApp {
+        background:
+            radial-gradient(circle at 5% 0%, rgba(92, 65, 255, 0.14), transparent 28%),
+            radial-gradient(circle at 95% 5%, rgba(0, 180, 255, 0.08), transparent 25%),
+            radial-gradient(circle at 50% 100%, rgba(120, 70, 255, 0.06), transparent 30%),
+            #090b10;
+        color: #f5f7fb;
     }
 
-    .subtitle {
-        color: #9ca3af;
+    .main .block-container {
+        max-width: 1450px;
+        padding-top: 2.5rem;
+        padding-bottom: 4rem;
+    }
+
+    [data-testid="stHeader"] {
+        background: transparent;
+    }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+
+    .vp-header {
+        position: relative;
+        padding: 10px 0 28px 0;
+    }
+
+    .vp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        border-radius: 999px;
+        background: rgba(100, 110, 255, 0.10);
+        border: 1px solid rgba(125, 135, 255, 0.25);
+        color: #a5aeff;
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+    }
+
+    .vp-title {
+        font-size: clamp(42px, 4.7vw, 62px);
+        line-height: 1;
+        font-weight: 850;
+        letter-spacing: -2.8px;
+        margin: 0;
+        background: linear-gradient(100deg, #ffffff 0%, #e1e4ff 45%, #8f9cff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .vp-title-dot {
+        color: #8290ff;
+        -webkit-text-fill-color: #8290ff;
+    }
+
+    .vp-subtitle {
+        margin-top: 15px;
+        color: #9ca5b5;
         font-size: 17px;
-        margin-top: -5px;
-        margin-bottom: 25px;
+        line-height: 1.6;
+        max-width: 760px;
     }
 
-    .section-title {
-        font-size: 25px;
-        font-weight: 700;
-        margin-top: 28px;
-        margin-bottom: 12px;
+    /* ============================================================
+       PIPELINE
+       ============================================================ */
+
+    .pipeline-wrapper {
+        margin: 6px 0 32px 0;
     }
 
     .step-card {
-        padding: 16px;
-        border-radius: 12px;
-        border: 1px solid #30343b;
-        background: #151820;
+        position: relative;
+        min-height: 112px;
+        padding: 20px 10px;
+        border-radius: 18px;
+        background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015));
+        border: 1px solid rgba(255,255,255,0.09);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
         text-align: center;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        overflow: hidden;
+    }
+
+    .step-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 15%;
+        right: 15%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(125,140,255,0.85), transparent);
+    }
+
+    .step-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(125,140,255,0.38);
+        box-shadow: 0 16px 35px rgba(0,0,0,0.25), 0 0 25px rgba(90,100,255,0.10);
     }
 
     .step-number {
-        font-size: 25px;
-        font-weight: 700;
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 10px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #5968f5, #8068e9);
+        color: white;
+        font-size: 15px;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(92,105,255,0.28);
     }
 
     .step-text {
-        color: #aeb4c0;
-        font-size: 14px;
+        color: #d9dce5;
+        font-size: 13px;
+        font-weight: 650;
+        letter-spacing: 0.2px;
     }
-    </style>
+
+    /* ============================================================
+       SECTION TITLES
+       ============================================================ */
+
+    .section-title {
+        font-size: 26px;
+        font-weight: 750;
+        letter-spacing: -0.5px;
+        margin-top: 36px;
+        margin-bottom: 16px;
+        color: #f3f4f8;
+    }
+
+    /* ============================================================
+       FILE UPLOADER
+       ============================================================ */
+
+    [data-testid="stFileUploader"] {
+        background: linear-gradient(145deg, rgba(99,102,241,0.08), rgba(255,255,255,0.025));
+        border: 1px dashed rgba(130,140,255,0.40);
+        border-radius: 22px;
+        padding: 8px;
+        transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    [data-testid="stFileUploader"]:hover {
+        border-color: rgba(145,155,255,0.75);
+        background: linear-gradient(145deg, rgba(99,102,241,0.13), rgba(255,255,255,0.035));
+        box-shadow: 0 0 30px rgba(90,100,255,0.07);
+    }
+
+    [data-testid="stFileUploaderDropzone"] {
+        background: transparent !important;
+        border: none !important;
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+
+    .stButton > button {
+        border-radius: 13px;
+        min-height: 46px;
+        font-weight: 700;
+        letter-spacing: 0.1px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: linear-gradient(135deg, #5968f5, #8068e9);
+        color: white;
+        box-shadow: 0 8px 24px rgba(82,95,220,0.22);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+        box-shadow: 0 12px 30px rgba(82,95,220,0.34);
+    }
+
+    .stButton > button:active {
+        transform: translateY(0);
+    }
+
+    button[kind="primary"] {
+        background: linear-gradient(135deg, #6675ff, #8b6df0) !important;
+        border: 1px solid rgba(150,160,255,0.35) !important;
+        box-shadow: 0 10px 30px rgba(90,105,255,0.28) !important;
+        font-size: 15px !important;
+    }
+
+    button[kind="primary"]:hover {
+        box-shadow: 0 14px 38px rgba(90,105,255,0.40) !important;
+    }
+
+    /* ============================================================
+       INFO / SUCCESS / WARNING / ERROR
+       ============================================================ */
+
+    [data-testid="stAlert"] {
+        border-radius: 16px !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    /* ============================================================
+       SIDEBAR
+       ============================================================ */
+
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0d1017 0%, #090b10 100%);
+        border-right: 1px solid rgba(255,255,255,0.07);
+    }
+
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: #f1f3f8;
+    }
+
+    section[data-testid="stSidebar"] label {
+        color: #b7becb;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+        color: #aeb6c6;
+    }
+
+    /* ============================================================
+       METRIC CARDS
+       ============================================================ */
+
+    [data-testid="stMetric"] {
+        background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018));
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 17px;
+        padding: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.16);
+    }
+
+    [data-testid="stMetricLabel"] {
+        color: #969eae !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        color: #f4f5fa !important;
+    }
+
+    /* ============================================================
+       DATAFRAME
+       ============================================================ */
+
+    [data-testid="stDataFrame"] {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    /* ============================================================
+       EXPANDERS
+       ============================================================ */
+
+    [data-testid="stExpander"] {
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 16px !important;
+        background: rgba(255,255,255,0.025);
+        overflow: hidden;
+    }
+
+    [data-testid="stExpander"]:hover {
+        border-color: rgba(125,135,255,0.22) !important;
+    }
+
+    /* ============================================================
+       IMAGES
+       ============================================================ */
+
+    [data-testid="stImage"] img {
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.07);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+    }
+
+    /* ============================================================
+       DOWNLOAD BUTTONS
+       ============================================================ */
+
+    .stDownloadButton > button {
+        width: 100%;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.10);
+        color: #dce1ec;
+        transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .stDownloadButton > button:hover {
+        background: rgba(110,120,255,0.10);
+        border-color: rgba(125,140,255,0.35);
+        transform: translateY(-1px);
+    }
+
+    /* ============================================================
+       SELECTBOX / INPUTS
+       ============================================================ */
+
+    [data-baseweb="select"] > div {
+        background: rgba(255,255,255,0.035);
+        border-color: rgba(255,255,255,0.10);
+        border-radius: 11px;
+    }
+
+    [data-baseweb="input"] {
+        background: rgba(255,255,255,0.035);
+        border-radius: 11px;
+    }
+
+    /* ============================================================
+       TABS
+       ============================================================ */
+
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 6px;
+        background: rgba(255,255,255,0.025);
+        padding: 6px;
+        border-radius: 13px;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 9px;
+        padding: 8px 16px;
+        color: #9ca5b5;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: rgba(110,120,255,0.13);
+        color: #e5e8ff !important;
+    }
+
+    /* ============================================================
+       DIVIDERS
+       ============================================================ */
+
+    hr {
+        border-color: rgba(255,255,255,0.07) !important;
+    }
+
+    /* ============================================================
+       SCROLLBAR
+       ============================================================ */
+
+    ::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #090b10;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #303646;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #4b5570;
+    }
+
+    /* ============================================================
+       MOBILE
+       ============================================================ */
+
+    @media (max-width: 900px) {
+        .vp-title {
+            font-size: 45px;
+            letter-spacing: -2px;
+        }
+
+        .vp-subtitle {
+            font-size: 15px;
+        }
+
+        .step-card {
+            min-height: 95px;
+            padding: 14px 6px;
+        }
+
+        .step-number {
+            width: 34px;
+            height: 34px;
+        }
+    }
+
+    
+    /* ============================================================
+       TOP VISIONPLOT BRAND BAR
+       ============================================================ */
+
+    .top-brand {
+        position: sticky;
+        top: 0;
+        z-index: 999999;
+
+        width: 100%;
+        min-height: 64px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 0 24px;
+        margin: -18px 0 30px 0;
+
+        background: rgba(9, 11, 16, 0.90);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    }
+
+    .brand-left {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .brand-icon {
+        font-size: 27px;
+        filter: drop-shadow(0 5px 12px rgba(120,130,255,0.25));
+    }
+
+    .brand-name {
+        font-size: 21px;
+        font-weight: 850;
+        letter-spacing: 1.7px;
+        color: #f5f6fb;
+    }
+
+    .brand-name span {
+        color: #8290ff;
+    }
+
+    .brand-right {
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 1.35px;
+        color: #7f8798;
+    }
+
+    @media (max-width: 700px) {
+        .top-brand {
+            min-height: 58px;
+            padding: 0 15px;
+        }
+
+        .brand-name {
+            font-size: 18px;
+        }
+
+        .brand-right {
+            display: none;
+        }
+    }
+
+</style>
     """,
     unsafe_allow_html=True,
 )
@@ -108,16 +568,19 @@ st.markdown(
 # HEADER
 # ================================================================
 
-st.markdown(
-    '<div class="main-title">📈 VisionPlot</div>',
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    '<div class="subtitle">'
-    "Image → Computer Vision → OCR → Calibration → Data"
-    "</div>",
-    unsafe_allow_html=True,
+st.html(
+    """
+    <div class="vp-header">
+        <div class="vp-badge">✦ GRAPH IMAGE ANALYSIS</div>
+        <div class="vp-title">
+            Turn graphs into <span class="vp-title-dot">data.</span>
+        </div>
+        <div class="vp-subtitle">
+            Upload a graph image and let VisionPlot use computer vision,
+            OCR and pixel-to-data calibration to recover its numerical data.
+        </div>
+    </div>
+    """
 )
 
 
@@ -139,14 +602,13 @@ cols = st.columns(len(steps))
 
 for col, (number, name) in zip(cols, steps):
     with col:
-        st.markdown(
+        st.html(
             f"""
             <div class="step-card">
                 <div class="step-number">{number}</div>
                 <div class="step-text">{name}</div>
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
 
@@ -235,41 +697,139 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is None:
 
-    st.info(
-        "Upload a graph image to begin."
+    st.markdown(
+        """
+        <div style="
+            margin-top: 6px;
+            padding: 17px 20px;
+            border-radius: 16px;
+            background: linear-gradient(
+                135deg,
+                rgba(40, 120, 190, 0.16),
+                rgba(70, 90, 180, 0.10)
+            );
+            border: 1px solid rgba(80, 150, 230, 0.18);
+            color: #b9dcff;
+            font-size: 15px;
+        ">
+            <span style="font-size:18px;">✦</span>
+            Upload a graph image to begin.
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     st.markdown(
         """
-        ### What VisionPlot does
+        <div style="
+            margin-top: 38px;
+            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: 780;
+            letter-spacing: -0.7px;
+            color: #f3f4f8;
+        ">
+            What VisionPlot does
+        </div>
 
-        **Input**
+        <div style="
+            color: #9ca5b5;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        ">
+            A computer-vision pipeline that transforms a graph image
+            into usable numerical data.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        A graph/chart image.
+    col1, col2, col3 = st.columns(3)
 
-        **Processing**
+    with col1:
+        st.markdown(
+            """
+            <div class="step-card" style="text-align:left; min-height:180px;">
+                <div style="font-size:30px; margin-bottom:12px;">📷</div>
+                <div style="font-size:18px; font-weight:750; color:#f1f3f8;">
+                    Input
+                </div>
+                <div style="
+                    color:#9ca5b5;
+                    margin-top:8px;
+                    line-height:1.6;
+                    font-size:14px;
+                ">
+                    Upload a graph or chart image in
+                    PNG, JPG, BMP or WEBP format.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        - Image preprocessing
-        - Axis detection
-        - Tick detection
-        - OCR
-        - Pixel-to-data calibration
-        - Curve extraction
-        - Curve sampling
+    with col2:
+        st.markdown(
+            """
+            <div class="step-card" style="text-align:left; min-height:180px;">
+                <div style="font-size:30px; margin-bottom:12px;">⚙️</div>
+                <div style="font-size:18px; font-weight:750; color:#f1f3f8;">
+                    Computer Vision
+                </div>
+                <div style="
+                    color:#9ca5b5;
+                    margin-top:8px;
+                    line-height:1.6;
+                    font-size:14px;
+                ">
+                    Preprocessing, edge detection, Hough
+                    transform, axis detection, OCR and calibration.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        **Output**
+    with col3:
+        st.markdown(
+            """
+            <div class="step-card" style="text-align:left; min-height:180px;">
+                <div style="font-size:30px; margin-bottom:12px;">📊</div>
+                <div style="font-size:18px; font-weight:750; color:#f1f3f8;">
+                    Output
+                </div>
+                <div style="
+                    color:#9ca5b5;
+                    margin-top:8px;
+                    line-height:1.6;
+                    font-size:14px;
+                ">
+                    X,Y data, reconstructed graph, polynomial
+                    equation, metrics and downloadable files.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        - Extracted X,Y data
-        - Detected curve overlay
-        - Mathematical graph
-        - Polynomial equation
-        - R²
-        - RMSE
-        - MAE
-        - CSV
-        - PNG
-        - SVG
+    st.markdown(
         """
+        <div style="
+            margin-top: 26px;
+            padding: 18px 22px;
+            border-radius: 17px;
+            background: rgba(99,102,241,0.055);
+            border: 1px solid rgba(120,130,255,0.14);
+            color: #aeb6c6;
+            font-size: 14px;
+        ">
+            <b style="color:#dfe3ff;">Pipeline:</b>
+            Image → Preprocessing → Axes → OCR →
+            Calibration → Curve Extraction → X,Y Data
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     st.stop()
